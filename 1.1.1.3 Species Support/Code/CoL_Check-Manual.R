@@ -116,62 +116,6 @@ for (i in 1:nrow(resolved_species)) {
   # Extract the new scientific name and convert to character explicitly
   output$new_scientificName[i] <- as.character(extract_species_info(resolved_species$acceptedScientificName[i])[1])
   
-  # Validate extracted name
-  if (is.na(new_scientific_name) || new_scientific_name == "NANA") {
-    new_scientific_name <- "not found in Natura2000 List"
-  }
-  
-  # Assign to output
-  output$new_scientificName[i] <- new_scientific_name
-  
-  # Extract canonical name only if scientific name is valid
-  if (new_scientific_name != "not found in Natura2000 List") {
-    output$new_canonicalName[i] <- extract_genus_species(new_scientific_name)
-  } else {
-    output$new_canonicalName[i] <- "not available"
-  }
-  
-  # Match species from the Natura2000 list
-  matched_species <- natura_species_list %>%
-    filter(`Update status` != 'Deletion') %>%
-    filter(`Species name` == output$new_canonicalName[i])
-  
-  # Check if any species matched
-  if (nrow(matched_species) > 0) {
-    # Assign the first match for new code and update status
-    output$new_code[i] <- matched_species %>% pull(`Species code`) %>% first()
-    output$new_UpdateStatus[i] <- matched_species %>% pull(`Update status`) %>% first()
-  } else {
-    # Assign default values if no match is found
-    output$new_code[i] <- "not found in Natura2000 List"
-    output$new_UpdateStatus[i] <- "not available"
-    output$new_canonicalName[i] <- "not available"
-    output$new_authorship[i] <- "not available"
-    output$new_classification[i] <- "not available"
-    output$new_scientificName[i] <- "not available"
-  }
-  
-  # Assign additional attributes
-  output$new_authorship[i] <- resolved_species$authorship[i]
-  output$TaxonomicStatus[i] <- resolved_species$category[i]
-  output$ruleApplied[i] <- paste(output$TaxonomicStatus[i], output$new_UpdateStatus[i], sep = " - ")
-  output$new_classification[i] <- resolved_species$classification[i]
-}
-
-
-
-# Loop through each row of the resolved_species data frame
-for (i in 1:nrow(resolved_species)) {
-  
-  # Assign old values directly
-  output$old_code[i] <- resolved_species$old_code[i]
-  output$old_scientificName[i] <- resolved_species$old_scientificName[i]
-  output$old_UpdateStatus[i] <- resolved_species$UpdateStatus[i]
-  output$ScientificNameAuthorCoL[i] <- resolved_species$acceptedScientificName[i]
-  
-  # Extract the new scientific name and convert to character explicitly
-  output$new_scientificName[i] <- as.character(extract_species_info(resolved_species$acceptedScientificName[i])[1])
-  
   # Extract canonical name from new scientific name
   output$new_canonicalName[i] <- extract_genus_species(output$new_scientificName[i])
   
